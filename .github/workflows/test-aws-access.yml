@@ -1,0 +1,25 @@
+name: "Test AWS OIDC Access"
+
+on:
+  workflow_dispatch:  # 手动触发，也可以改为 push、pull_request 等
+
+permissions:
+  id-token: write      # ⭐ 必须有，允许获取 OIDC token
+  contents: read
+
+jobs:
+  aws-access:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.OIDC_ROLE_ARN }}
+          aws-region: us-east-1
+          role-session-name: GitHubOIDCTest
+
+      - name: Show current identity
+        run: aws sts get-caller-identity
