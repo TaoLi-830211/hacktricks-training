@@ -1,25 +1,32 @@
-name: "Test AWS OIDC Access"
+name: "Get AWS Secret via OIDC"
 
 on:
-  workflow_dispatch:  # 手动触发，也可以改为 push、pull_request 等
+  workflow_dispatch:  # 手动触发，便于测试
 
 permissions:
-  id-token: write      # ⭐ 必须有，允许获取 OIDC token
-  contents: read
+  id-token: write  # ⭐️ 必需，允许 GitHub 获取 OIDC token
+  contents: read   # checkout 代码需要
 
 jobs:
-  aws-access:
+  get-secret:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials using OIDC
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.OIDC_ROLE_ARN }}
           aws-region: us-east-1
-          role-session-name: GitHubOIDCTest
+          role-session-name: GitHubOIDCSession
 
-      - name: Show current identity
-        run: aws sts get-caller-identity
+      - name: Get secret from AWS Secrets Manager
+        run: |
+          echo "Retrieving secret..."
+          aws secretsmanager get-secret-value \
+            --secret-id flag_sts_lab_2 \
+            --query 'SecretString' \
+            --output text
+
