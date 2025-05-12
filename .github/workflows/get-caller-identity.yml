@@ -2,7 +2,9 @@ name: "Get caller identity"
 
 # The workflow should only trigger on pull requests to the main branch
 on:
-  workflow_dispatch: 
+  pull_request:
+    branches:
+      - main 
 
 # Required to get the ID Token that will be used for OIDC
 permissions:
