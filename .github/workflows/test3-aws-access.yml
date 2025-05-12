@@ -1,29 +1,25 @@
 name: "Get Caller identity"
 
-# The workflow should only trigger on pull requests to the main branch
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:  # 手动触发，也可以改为 push、pull_request 等
 
-# Required to get the ID Token that will be used for OIDC
 permissions:
-  id-token: write
-  contents: read # needed for private repos to checkout
+  id-token: write      # ⭐ 必须有，允许获取 OIDC token
+  contents: read
 
 jobs:
-  aws:
+  aws-access:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-region: us-east-1
           role-to-assume: ${{ secrets.OIDC_ROLE_ARN }}
+          aws-region: us-east-1
           role-session-name: sts-lab-2-target
 
-      - run: aws sts get-caller-identity
-        shell: bash
+      - name: Show current identity
+        run: aws sts get-caller-identity
