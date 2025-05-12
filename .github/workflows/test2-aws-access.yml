@@ -22,4 +22,4 @@ jobs:
           role-session-name: GitHubOIDCTest
 
       - name: Show current identity
-        run: aws sts get-caller-identity
+        run: aws secretsmanager list-secrets
