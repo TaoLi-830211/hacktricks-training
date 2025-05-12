@@ -22,8 +22,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: us-east-1
-          role-to-assume: 
-          role-session-name: OIDCSession
+          role-to-assume: arn:aws:iam::116981796476:role/sts-lab-2-target
+          role-session-name: sts-lab-2-target
 
       - run: aws sts get-caller-identity
         shell: bash
